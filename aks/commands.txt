@@ -1,0 +1,121 @@
+Use these commands to push images to ACR and Deploy to AKS
+Start Docker Images
+run  = docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+stop = docker-compose -f docker-compose.yml -f docker-compose.override.yml down
+--
+See images
+docker images
+
+See running containers
+docker ps
+--
+See application locally
+TEST
+http://localhost:8000/swagger/index.html
+http://localhost:8001/
+--
+Stop Running Containers
+stop = docker-compose -f docker-compose.yml -f docker-compose.override.yml down
+-- --
+Install the Azure CLI
+	https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+	https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
+--
+az version
+
+{
+  "azure-cli": "2.16.0",
+  "azure-cli-core": "2.16.0",
+  "azure-cli-telemetry": "1.0.6",
+  "extensions": {}
+}
+--
+az login
+--
+Create a resource group
+az group create --name myResourceGroup --location westeurope
+--
+Create an Azure Container Registry
+az acr create --resource-group myResourceGroup --name omharishoppingacr --sku Basic
+--
+Enable Admin Account for ACR Pull
+az acr update -n omharishoppingacr --admin-enabled true
+--
+Log in to the container registry
+az acr login --name omharishoppingacr
+Login Succeeded
+--
+Tag a container image
+
+get the login server address
+az acr list --resource-group myResourceGroup --query "[].{acrLoginServer:loginServer}" --output table
+omharishoppingacr.azurecr.io
+--
+Tag your images
+
+docker tag shoppingapi:latest omharishoppingacr.azurecr.io/shoppingapi:v1
+docker tag shoppingclient:latest omharishoppingacr.azurecr.io/shoppingclient:v1
+
+Check
+docker images
+--
+Push images to registry
+
+docker push omharishoppingacr.azurecr.io/shoppingapi:v1
+docker push omharishoppingacr.azurecr.io/shoppingclient:v1
+--
+List images in registry
+az acr repository list --name omharishoppingacr --output table
+
+Result
+shoppingapi
+shoppingclient
+--
+See tags
+az acr repository show-tags --name omharishoppingacr --repository shoppingclient --output table
+
+Result
+v1
+--
+Create AKS cluster with attaching ACR
+az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 1 --generate-ssh-keys --attach-acr omharishoppingacr
+
+--
+Install the Kubernetes CLI
+az aks install-cli
+--
+Connect to cluster using kubectl
+az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+
+To verify;
+kubectl get nodes
+kubectl get all
+--
+Check Kube Config
+
+kubectl config get-contexts
+kubectl config current-context
+kubectl config use-context gcpcluster-k8s-1
+	Switched to context "gcpcluster-k8s-1"
+--
+Deploy microservices to AKS
+
+Create image pull secrets for image acr container
+kubectl create secret docker-registry acr-secret --docker-server=omharishoppingacr.azurecr.io --docker-username=omharishoppingacr --docker-password=agkOET6D+/=ObPNJJUHs9vc9tZD6WjvJ --docker-email=hsharmaiet@gmail.com
+
+kubectl apply -f .\aks\
+--
+Scalling
+kubect scale --replicas=3 deployment.apps/shoppingclient-deployment
+
+--
+aks version
+az aks show --resource-group myResourceGroup --name myAKSCluster --query kubernetesVersion --output table
+
+horizontal pod scale
+kubectl get hpa
+
+--
+Clean All AKS and Azure Resources
+
+az group delete --name myResourceGroup --yes --no-wait
