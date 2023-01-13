@@ -2,8 +2,8 @@
 Deploying .Net Microservices to AKS and Automating with  Azure DevOps
 [![Build Status](https://dev.azure.com/hsharmaiet/shopping/_apis/build/status/shoppingclient-pipeline?branchName=main)](https://dev.azure.com/hsharmaiet/shopping/_build/latest?definitionId=4&branchName=main)
 [![Build Status](https://dev.azure.com/hsharmaiet/shopping/_apis/build/status/shoppingapi-pipeline?branchName=main)](https://dev.azure.com/hsharmaiet/shopping/_build/latest?definitionId=3&branchName=main)
-**About Kubernetes**
-k8s Introduction https://www.youtube.com/watch?v=TlHvYWVUZyc
+
+**About Kubernetes** https://www.youtube.com/watch?v=TlHvYWVUZyc
 1. k8s is an open-source container orchestration platform.
 2. It automates the deployment, scaling and management of containerized applications.
 3. It can be traced back to Google's internal container ocrahstration system Borg, which managed the deployment of thousands of applications within Google.
@@ -21,3 +21,17 @@ k8s Introduction https://www.youtube.com/watch?v=TlHvYWVUZyc
   The kubelet: is a daemon that runs on each worker node. It is responsible for communicating wiht the control plane. It receives instructions from the control plane about which pods to run the node, and ensures that the desired state of the pods is maintained.
   Container runtime: runs the containers on the workder nodes. It is reponsible for pulling the container images from a registry, starting and stopping the containers,and managing the conatainer's resources.
   kube-proxy: is a network proxy that runs on each worker node. Ir is responsible for routing traffic to the correct pods. It also proved load balancing for the pods and ensures that traffic is distributed evenly across the pods.
+  
+**k8s upsides**
+1. k8s is scalable and highly avaialbe.
+2. It provides features like self-healing, automativ rollbacks and horizontal scalling. It makes it easy to scale our apps up and donw as needed, allowing us to respond to changes in demand quickly.
+3. k8s is portable. It helps us to deploy and manage apps in a consistant and reliable way regardless of the underlying infrastructure. It runs on-premise, in a public cloud, or in a hybrid env.
+4. It provides a uniform way to package, deploy and manage apps.
+
+**k8s dowsides**
+1. Complexity : It is complex to setup and operate. The upfron cost is high, especially for organizations new to container orchestration. It requires a high level of expertise and resources to set up and manage a prod k8s env.
+2. Cost : k8s requires a certain minimum level of resources to run in order to support all features we mentioned above. It is likely an overkill for many small organizations.
+
+One popular option that strikes a reasonable balance is to offload the management of the control plane to a managed k8s service. Managed k8s services are provided by cloud providers. Ex: Amozon EKS, Google Kubernetes Engine, Azure Kubernetes Serives(AKS).
+These services allow organizations to run the k8s apps without having to worry about the underlying infra. They take case of tasks that require deep expertise, like setting up and configuring the control plane, scalling the cluster and provide ongoing maintenance and support. This is a reasonable option fo mid-size organization to test out k8s.
+
